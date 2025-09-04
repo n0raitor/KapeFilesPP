@@ -1,0 +1,35 @@
+name: Sync Upstream KAPE Files
+
+on:
+  schedule:
+    - cron: "0 3 * * *"   # runs daily at 03:00 UTC
+  workflow_dispatch:       # allows manual trigger
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout fork
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Add upstream repo
+        run: git remote add upstream https://github.com/EricZimmerman/KapeFiles.git
+
+      - name: Fetch upstream
+        run: git fetch upstream
+
+      - name: Merge upstream into fork
+        run: git merge upstream/main --allow-unrelated-histories -m "Sync upstream changes"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@v0.8.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
