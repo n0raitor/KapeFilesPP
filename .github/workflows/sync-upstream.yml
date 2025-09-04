@@ -25,8 +25,9 @@ jobs:
       - name: Fetch upstream
         run: git fetch upstream
 
-      - name: Merge upstream into fork
-        run: git merge upstream/main --allow-unrelated-histories -m "Sync upstream changes"
+      - name: Merge upstream into fork (prefer upstream)
+        run: |
+          git merge upstream/master --strategy-option=theirs -m "Sync upstream changes" || echo "Erics Repo Sync"
 
       - name: Push changes
         uses: ad-m/github-push-action@v0.8.0
